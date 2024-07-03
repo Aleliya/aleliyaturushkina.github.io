@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Comic</title>
+        <style>
+            body {
+                padding: 0 450px;
+                font-family: DejaVu Sans Mono, monospace;
+            } 
+        </style>
+    </head>
+    <body>
+        <div id="safe_title-container"></div>
+        <div id="date-container"></div>
+        <div id="image-container"></div>
+        <div id="alt-container"></div>
+
+        <script>
+            const email = 'a.turushkina@innopolis.university';
+            const params = new URLSearchParams();
+            params.append('email', email);
+
+            fetch('https://fwd.innopolis.university/api/hw2?' + params.toString())
+                .then(r => r.json())
+                .then(id => {
+
+                    const parameters = new URLSearchParams()
+                    parameters.append('id', id)
+                    
+                    fetch('https://fwd.innopolis.university/api/comic?' + parameters.toString())
+                        .then(r => r.json())
+                        .then(res => {  
+
+                            
+                                let year;
+                                let month;
+                                let day;
+
+                                for (let word in res) {
+                                    if (word === "day") {
+                                        day = res[word]
+                                    } else if (word === "month") {
+                                        month = res[word]
+                                    } else if (word === "year") {
+                                        year = res[word]
+                                    } else if (word === "safe_title") {
+                                        const titleElement = document.createElement("h1")
+                                        titleElement.textContent = res[word]
+                                        const titleContainer = document.getElementById("safe_title-container")
+                                        titleContainer.appendChild(titleElement)
+                                    } else if (word === "img") {
+                                        const imageElement = document.createElement("img")
+                                        imageElement.src = res[word]
+                                        const imageContainer = document.getElementById("image-container")
+                                        imageContainer.appendChild(imageElement)
+                                    } else if (word === "alt") {
+                                        const altElement = document.createElement("p")
+                                        altElement.textContent = res[word]
+                                        const altContainer = document.getElementById("alt-container")
+                                        altContainer.appendChild(altElement)
+                                    }
+                                }
+                                const date = new Date(year, month-1, day)
+                                const dateElement = document.createElement("h2")
+                                dateElement.textContent = date.toLocaleDateString()
+                                const dateContainer = document.getElementById("date-container")
+                                dateContainer.appendChild(dateElement)
+                            
+                        })
+                        .catch(error => console.error(error))
+                })
+                .catch(error => console.error(error))
+
+        </script>
+    </body>
+</html>
